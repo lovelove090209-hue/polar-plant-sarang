@@ -59,9 +59,16 @@ def norm_set(s: str) -> set[str]:
 
 
 def match_keyword(text: str, keyword: str) -> bool:
-    tset = norm_set(str(text))
-    kset = norm_set(str(keyword))
-    return len(tset.intersection(kset)) > 0
+    """
+    ✅ '송도고_환경데이터' 안에 '환경데이터'가 들어있는지
+    ✅ NFC/NFD 양방향/교차 포함 비교로 안정적으로 탐지
+    """
+    t_nfc = unicodedata.normalize("NFC", str(text))
+    t_nfd = unicodedata.normalize("NFD", str(text))
+    k_nfc = unicodedata.normalize("NFC", str(keyword))
+    k_nfd = unicodedata.normalize("NFD", str(keyword))
+
+    return (k_nfc in t_nfc) or (k_nfd in t_nfd) or (k_nfc in t_nfd) or (k_nfd in t_nfc)
 
 
 def parse_school_from_stem(stem: str) -> str:
